@@ -1,8 +1,9 @@
 {
   "name": "@0xflicker/ranker",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "description": "Efficient ranking",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "0xFicker <cmdrnft@protonmail.com>",
   "repository": "git://github.com/0xflicker/ranker.git",
   "license": "MIT",
