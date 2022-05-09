@@ -8,7 +8,7 @@
   "repository": "git://github.com/0xflicker/ranker.git",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc",
     "test": "jest test",
     "prepublishOnly": "yarn build",
     "prettier": "prettier --write '**/*.{ts,js,json,md}'",
@@ -48,6 +48,7 @@
     "uuid": "^8.3.2"
   },
   "files": [
-    "/lib"
+    "lib/**/*.js",
+    "lib/**/*.ts"
   ]
 }
