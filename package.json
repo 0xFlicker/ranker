@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "0xFicker <cmdrnft@protonmail.com>",
-  "repository": "git://github.com/0xflicker/ranker.git",
+  "repository": "git://github.com/0xFlicker/ranker.git",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
