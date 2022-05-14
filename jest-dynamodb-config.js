@@ -3,13 +3,7 @@ module.exports = {
     {
       TableName: `boards`,
       KeySchema: [{ AttributeName: "Name", KeyType: "HASH" }],
-      AttributeDefinitions: [
-        { AttributeName: "Name", AttributeType: "S" },
-        // { AttributeName: 'Score_Range', AttributeType: 'NS' },
-        // { AttributeName: 'Branching_Factor', AttributeType: 'N' },
-        // { AttributeName: 'Period', AttributeType: 'S' },
-        // { AttributeName: 'Leaderboard_Size', AttributeType: 'S' },
-      ],
+      AttributeDefinitions: [{ AttributeName: "Name", AttributeType: "S" }],
       BillingMode: "PAY_PER_REQUEST",
     },
     {
@@ -21,8 +15,6 @@ module.exports = {
       AttributeDefinitions: [
         { AttributeName: "Board_Name", AttributeType: "S" },
         { AttributeName: "Player_ID", AttributeType: "S" },
-        // { AttributeName: 'Score', AttributeType: 'NS' },
-        // { AttributeName: 'Date', AttributeType: 'S' },
       ],
       BillingMode: "PAY_PER_REQUEST",
     },
@@ -35,7 +27,6 @@ module.exports = {
       AttributeDefinitions: [
         { AttributeName: "Node_ID", AttributeType: "S" },
         { AttributeName: "Board_Name", AttributeType: "S" },
-        // { AttributeName: 'Child_Counts', AttributeType: 'NS' },
       ],
       BillingMode: "PAY_PER_REQUEST",
     },
@@ -44,8 +35,6 @@ module.exports = {
       KeySchema: [{ AttributeName: "Board_Name", KeyType: "HASH" }],
       AttributeDefinitions: [
         { AttributeName: "Board_Name", AttributeType: "S" },
-        // { AttributeName: 'Period', AttributeType: 'S' },
-        // { AttributeName: 'Scores', AttributeType: 'L' },
       ],
       BillingMode: "PAY_PER_REQUEST",
     },

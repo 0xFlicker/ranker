@@ -10,7 +10,7 @@ export interface IConfig {
 
 export function getTableName(tableName: keyof IConfig["tableNames"]): string {
   return (
-    process.env[`TABLE_NAME_${tableName.toUpperCase()}`] ||
+    process.env[`TABLE_NAME_RANKER_${tableName.toUpperCase()}`] ||
     config.tableNames[tableName]
   );
 }
