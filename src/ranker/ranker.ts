@@ -405,7 +405,7 @@ async function createRanker({
     const nodeRequest = await db.send(
       new BatchGetCommand({
         RequestItems: {
-          nodes: {
+          [getTableName("nodes")]: {
             Keys: keys,
           },
         },
@@ -458,7 +458,7 @@ async function createRanker({
     const nodeResponse = await db.send(
       new BatchGetCommand({
         RequestItems: {
-          nodes: {
+          [getTableName("nodes")]: {
             Keys: keys.map((key) => ({ Node_ID: key, Board_Name: rootKey })),
           },
         },
@@ -516,7 +516,7 @@ async function createRanker({
         RequestItems: {
           ...(nodesToUpdate.length
             ? {
-                nodes: nodesToUpdate.map((data) => {
+                [getTableName("nodes")]: nodesToUpdate.map((data) => {
                   return {
                     PutRequest: {
                       Item: data,
@@ -527,7 +527,7 @@ async function createRanker({
             : {}),
           ...(scoresToUpdate.length || scoresToDelete.length
             ? {
-                scores: [
+                [getTableName("scores")]: [
                   ...scoresToUpdate.map((data) => {
                     return {
                       PutRequest: {
@@ -598,7 +598,7 @@ async function createRanker({
       ? await db.send(
           new BatchGetCommand({
             RequestItems: {
-              scores: {
+              [getTableName("scores")]: {
                 Keys: scoreKeys.map((key) => ({
                   Player_ID: key,
                   Board_Name: rootKey,
@@ -1030,7 +1030,7 @@ async function createRanker({
     const scoresToRemoveResponse = await db.send(
       new BatchGetCommand({
         RequestItems: {
-          scores: {
+          [getTableName("scores")]: {
             Keys: scores.map((name) => ({
               Player_ID: name,
               Board_Name: rootKey,
