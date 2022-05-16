@@ -176,18 +176,30 @@ async function createRanker({
   }
   let isInitializing: boolean | Promise<void> = false;
   async function lazy() {
-    await db.send(
-      new PutCommand({
-        TableName: getTableName("boards"),
-        Item: {
+    // Check if the ranker already exists
+    const tableName = getTableName("boards");
+    const response = await db.send(
+      new GetCommand({
+        TableName: tableName,
+        Key: {
           Name: rootKey,
-          Score_Range: scoreRange,
-          Branching_Factor: branchingFactor,
-          Leaderboard_Size: leaderboardSize,
-          Period: period,
         },
       })
     );
+    if (!response.Item) {
+      await db.send(
+        new PutCommand({
+          TableName: getTableName("boards"),
+          Item: {
+            Name: rootKey,
+            Score_Range: scoreRange,
+            Branching_Factor: branchingFactor,
+            Leaderboard_Size: leaderboardSize,
+            Period: period,
+          },
+        })
+      );
+    }
   }
 
   function lazyInit<T extends (...u: unknown[]) => unknown>(func: T) {
