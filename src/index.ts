@@ -1,8 +1,3 @@
-export {
-  Ranker,
-  RankerOpts,
-  default as createRanker,
-  ScoreInput,
-} from "./ranker";
-export { Scorer, createScorer } from "./ranker/scores";
+export * from "./ranker";
 export { config } from "./config";
+export { default } from "./ranker";

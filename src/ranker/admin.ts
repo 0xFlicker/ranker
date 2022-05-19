@@ -115,3 +115,24 @@ export async function fetchBoard(
   }
   return response.Item as TableBoard;
 }
+
+export async function fetchBoardNames(
+  db: DynamoDBDocumentClient,
+  scanOptions?: Omit<ScanCommandInput, "TableName" | "ProjectionExpression">
+) {
+  const boards: string[] = [];
+  let result: ScanCommandOutput;
+  do {
+    result = await db.send(
+      new ScanCommand({
+        TableName: getTableName("boards"),
+        ProjectionExpression: "Name",
+        ...scanOptions,
+      })
+    );
+    if (result.Items) {
+      boards.push(...(result.Items.map(({ Name }) => Name) as string[]));
+    }
+  } while (result.LastEvaluatedKey);
+  return boards;
+}
