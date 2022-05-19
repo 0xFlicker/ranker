@@ -6,26 +6,20 @@ import {
   scoreMapToTableScores,
 } from "./ranker.testMatchers";
 import { v4 as createUuid } from "uuid";
+import { createRanker } from "./admin";
 
 describe("Ranker", () => {
-  it("can be created", async () => {
-    expect(
-      await initRanker({
-        rootKey: "foo",
-        scoreRange: [0, 100],
-        branchingFactor: 20,
-        db: createDb(),
-      })
-    ).toBeDefined();
-  });
-
   it("can save a score", async () => {
     const rootKey = createUuid();
     const db = createDb();
+    await createRanker({
+      rootKey,
+      scoreRange: [0, 1000],
+      branchingFactor: 100,
+      db,
+    });
     const ranker = await initRanker({
       rootKey,
-      scoreRange: [0, 100],
-      branchingFactor: 20,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -66,11 +60,14 @@ describe("Ranker", () => {
   it("has expected scores", async () => {
     const db = createDb();
     const rootKey = createUuid();
-
+    await createRanker({
+      rootKey,
+      scoreRange: [0, 1000],
+      branchingFactor: 100,
+      db,
+    });
     const ranker = await initRanker({
       rootKey,
-      scoreRange: [0, 100],
-      branchingFactor: 20,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -91,10 +88,14 @@ describe("Ranker", () => {
   it("has expected ranks", async () => {
     const db = createDb();
     const rootKey = createUuid();
+    await createRanker({
+      rootKey,
+      scoreRange: [0, 1000],
+      branchingFactor: 100,
+      db,
+    });
     const ranker = await initRanker({
       rootKey,
-      scoreRange: [0, 100],
-      branchingFactor: 100,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -118,10 +119,14 @@ describe("Ranker", () => {
   it("can update scores", async () => {
     const db = createDb();
     const rootKey = createUuid();
-    const ranker = await initRanker({
+    await createRanker({
       rootKey,
       scoreRange: [0, 1000],
       branchingFactor: 100,
+      db,
+    });
+    const ranker = await initRanker({
+      rootKey,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -161,10 +166,14 @@ describe("Ranker", () => {
   it("can remove scores", async () => {
     const db = createDb();
     const rootKey = createUuid();
-    const ranker = await initRanker({
+    await createRanker({
       rootKey,
       scoreRange: [0, 1000],
       branchingFactor: 100,
+      db,
+    });
+    const ranker = await initRanker({
+      rootKey,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -210,10 +219,14 @@ describe("Ranker", () => {
   it("supports tie breakers", async () => {
     const db = createDb();
     const rootKey = createUuid();
-    const ranker = await initRanker({
+    await createRanker({
       rootKey,
       scoreRange: [0, 1000, 0, 50],
       branchingFactor: 100,
+      db,
+    });
+    const ranker = await initRanker({
+      rootKey,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -262,10 +275,17 @@ describe("Ranker", () => {
   it("can add scores", async () => {
     const db = createDb();
     const rootKey = createUuid();
-    const ranker = await initRanker({
+    await createRanker({
       rootKey,
       scoreRange: [0, 1000],
       branchingFactor: 100,
+      displayName: "test",
+      description: "test",
+      period: -1,
+      db,
+    });
+    const ranker = await initRanker({
+      rootKey,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -304,11 +324,18 @@ describe("Ranker", () => {
   it("Can insert one", async () => {
     const db = createDb();
     const rootKey = createUuid();
-    const ranker = await initRanker({
+    await createRanker({
       rootKey,
       scoreRange: [0, 1000],
       branchingFactor: 100,
       leaderboardSize: 1,
+      displayName: "test",
+      description: "test",
+      period: -1,
+      db,
+    });
+    const ranker = await initRanker({
+      rootKey,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -323,11 +350,18 @@ describe("Ranker", () => {
   it("Can insert several past max", async () => {
     const db = createDb();
     const rootKey = createUuid();
-    const ranker = await initRanker({
+    await createRanker({
       rootKey,
       scoreRange: [0, 1000],
       branchingFactor: 100,
       leaderboardSize: 2,
+      displayName: "test",
+      description: "test",
+      period: -1,
+      db,
+    });
+    const ranker = await initRanker({
+      rootKey,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);
@@ -370,11 +404,18 @@ describe("Ranker", () => {
   it("Can replace entire leaderboard", async () => {
     const db = createDb();
     const rootKey = createUuid();
-    const ranker = await initRanker({
+    await createRanker({
       rootKey,
       scoreRange: [0, 1000],
       branchingFactor: 100,
       leaderboardSize: 3,
+      displayName: "test",
+      description: "test",
+      period: -1,
+      db,
+    });
+    const ranker = await initRanker({
+      rootKey,
       db,
     });
     const rankAndStack = createRankAndStack(ranker);

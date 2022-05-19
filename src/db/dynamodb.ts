@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb"; // ES6 import
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 export default function () {
   const isTest = process.env.NODE_ENV === "test";
@@ -23,6 +23,8 @@ export interface TableBoard {
   Branching_Factor: number;
   Period: number;
   Leaderboard_Size: number;
+  Display_Name: string;
+  Description: string;
 }
 
 export interface TableScores {

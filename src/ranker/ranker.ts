@@ -20,7 +20,6 @@ import {
   DynamoDBDocumentClient,
   BatchGetCommand,
   GetCommand,
-  PutCommand,
   UpdateCommand,
   BatchWriteCommand,
 } from "@aws-sdk/lib-dynamodb";
@@ -31,15 +30,6 @@ const log = logger("trace:ranker");
 
 export interface RankerOpts {
   rootKey: string;
-  scoreRange: number[];
-  branchingFactor: number;
-  debounceOptions?: {
-    delay?: number;
-    maxDelay?: number;
-    maxSize?: number;
-  };
-  period?: number;
-  leaderboardSize?: number;
   db: DynamoDBDocumentClient;
 }
 
@@ -155,22 +145,20 @@ function leaderboardRemove(scores: TableScores[], scoreEntsDel: string[]) {
  *
  * @param opts Leaderboard configuration
  * @param opts.rootKey The name of this leaderboard to namespace it from all other leaderboards
- * @param opts.scoreRange The range of scores allowed. Should always be in pairs
- * @param opts.branchingFactor An optimization strategy for tree branching. How many scores does each node contain
- * @param opts.leaderboardSize The number of names belonging to scores to track. Default is Infinity (track the names of all scores)
- * @param opts.period The time in seconds that a score will remain on the leaderboard
  * @param opts.db A Firestore like DB to store data
  *
  * @returns A Ranker
  */
-async function createRanker({
-  rootKey,
-  scoreRange,
-  branchingFactor,
-  leaderboardSize = 1000,
-  period = -1,
-  db,
-}: RankerOpts): Promise<Ranker> {
+async function createRanker({ rootKey, db }: RankerOpts): Promise<Ranker> {
+  //  * @param opts.scoreRange The range of scores allowed. Should always be in pairs
+  //  * @param opts.branchingFactor An optimization strategy for tree branching. How many scores does each node contain
+  //  * @param opts.leaderboardSize The number of names belonging to scores to track. Default is Infinity (track the names of all scores)
+  //  * @param opts.period The time in seconds that a score will remain on the leaderboard
+  let leaderboardSize: number;
+  let period: number;
+  let scoreRange: number[];
+  let branchingFactor: number;
+
   if (!db) {
     throw new Error("Must define a db for the ranker");
   }
@@ -184,22 +172,19 @@ async function createRanker({
         Key: {
           Name: rootKey,
         },
+        ConsistentRead: true,
       })
     );
     if (!response.Item) {
-      await db.send(
-        new PutCommand({
-          TableName: getTableName("boards"),
-          Item: {
-            Name: rootKey,
-            Score_Range: scoreRange,
-            Branching_Factor: branchingFactor,
-            Leaderboard_Size: leaderboardSize,
-            Period: period,
-          },
-        })
-      );
+      throw new Error(`Ranking ${rootKey} does not exist`);
     }
+    const { Leaderboard_Size, Period, Score_Range, Branching_Factor } =
+      response.Item;
+
+    leaderboardSize = Leaderboard_Size === -1 ? Infinity : Leaderboard_Size;
+    period = Period === -1 ? Infinity : Period;
+    scoreRange = Score_Range;
+    branchingFactor = Branching_Factor;
   }
 
   function lazyInit<T extends (...u: unknown[]) => unknown>(func: T) {
@@ -213,28 +198,6 @@ async function createRanker({
       }
       return func(...args);
     };
-  }
-
-  const bf = BigInt(branchingFactor);
-
-  // Sanity checking
-  if (scoreRange.length <= 1) {
-    throw new Error("Rankings must be a ranger of at least than 2");
-  }
-  if (scoreRange.length % 2 !== 0) {
-    throw new Error("Rankings must be in pairs");
-  }
-  for (let i = 0; i < scoreRange.length; i += 2) {
-    if (scoreRange[i] > scoreRange[i + 1]) {
-      throw new Error(
-        `Score pairs must be in ascending order and not ${scoreRange[i]}, ${
-          scoreRange[i + 1]
-        }`
-      );
-    }
-  }
-  if (branchingFactor <= 1) {
-    throw new Error("Branching factor must be greater than 1");
   }
 
   /*
@@ -253,6 +216,8 @@ async function createRanker({
     child: number
   ): Array<number> {
     const bChild = BigInt(child);
+    const bf = BigInt(branchingFactor);
+
     for (let i = 1; i < scoreRange.length; i += 2) {
       if (scoreRange[i] > scoreRange[i - 1] + 1) {
         const childScoreRange = Array(scoreRange.length);
@@ -284,6 +249,8 @@ async function createRanker({
     const bLow = BigInt(low);
     const bHigh = BigInt(high);
     const bWant = BigInt(want);
+    const bf = BigInt(branchingFactor);
+
     // Need to find x such that (using integer division):
     //     x  *(high-low)/branching_factor <= want - low <
     //   (x+1)*(high-low)/branching_factor
@@ -763,6 +730,8 @@ async function createRanker({
    * @returns A score range [min0', max0', min1', max1', ...] for that child.
    */
   function calcChildScoreRange(scoreRange: number[], child: number): number[] {
+    const bf = BigInt(branchingFactor);
+
     log(
       () =>
         `-> calcChildScoreRange(scoreRange: ${JSON.stringify(
