@@ -4,7 +4,6 @@ export interface IConfig {
     scores: string;
     nodes: string;
     leaderboards: string;
-    nonces: string;
   };
 }
 
@@ -21,6 +20,5 @@ export const config: IConfig = {
     scores: "scores",
     nodes: "nodes",
     leaderboards: "leaderboards",
-    nonces: "nonces",
   },
 };
