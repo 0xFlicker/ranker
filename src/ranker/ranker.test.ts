@@ -107,7 +107,7 @@ describe("Ranker", () => {
         fizz: [20],
       })
     );
-    await ranker.findRanks([[5], [10]]);
+    expect(await ranker.findRanks([[5], [10]])).toEqual([4, 3]);
     expect(leaderboard).toHaveLeaderboard([
       { playerId: `fizz`, score: [20] },
       { playerId: `baz`, score: [15] },
