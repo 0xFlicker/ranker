@@ -1,11 +1,24 @@
 {
   "name": "@0xflicker/ranker",
   "version": "1.0.9",
-  "description": "Efficient ranking",
+  "description": "Serverless DynamoDB leaderboard with exact rank resolution",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "0xFicker <cmdrnft@protonmail.com>",
   "repository": "git://github.com/0xFlicker/ranker.git",
+  "homepage": "https://github.com/0xFlicker/ranker#readme",
+  "bugs": {
+    "url": "https://github.com/0xFlicker/ranker/issues"
+  },
+  "keywords": [
+    "dynamodb",
+    "aws",
+    "serverless",
+    "leaderboard",
+    "ranking",
+    "typescript",
+    "data-structures"
+  ],
   "license": "MIT",
   "scripts": {
     "build": "tsc",
